@@ -1,0 +1,236 @@
+<div class="flex flex-col p-4 gap-5">
+  <h1 class="text-2xl">Budget Builder</h1>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="flex flex-col">
+      <label for="startTime">Start Time</label>
+      <input type="month" id="startTime" class="border p-2 rounded" [value]="startDate"
+             (change)="onChangeMonths('startDate', $event)"/>
+    </div>
+    <div class="flex flex-col">
+      <label for="endTime">End Time</label>
+      <input type="month" id="endTime" class="border" [value]="endDate"
+             (change)="onChangeMonths('endDate', $event)"/>
+    </div>
+  </div>
+
+  <div class="overflow-auto h-[80vh] relative">
+    <table>
+      <thead>
+      <tr>
+        <th class="p-2 border sticky bg-white top-0">
+          <div class="flex flex-col">
+            <span>
+            Start Period {{ startDate | date: 'MM/yyyy' }}
+          </span>
+            <span>
+            End Period {{ endDate | date: 'MM/yyyy' }}
+          </span>
+          </div>
+
+        </th>
+        <th
+          *ngFor="let month of months"
+          class="p-2 border sticky bg-white top-0"
+        >
+          {{ month }}
+        </th>
+      </tr>
+      </thead>
+      <!--Income-->
+      <tbody>
+      <tr>
+        <td [colSpan]="months.length + 1" class="p-2 border border-collapse bg-gray-200 font-bold">
+          Income
+        </td>
+      </tr>
+      </tbody>
+      <tbody
+        *ngFor="let category of income; let i = index"
+      >
+      <tr>
+        <td class="p-2 border border-collapse" [colSpan]="months.length + 1">
+          <div class="flex gap-1">
+            <input [id]="category.id" [(ngModel)]="category.label"/>
+            <button class="shadow px-1 text-red-500"
+                    (click)="deleteCategory('income', category.id)">
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr
+        *ngFor="let item of category.subCategories"
+      >
+        <td class="p-2 border border-collapse">
+          <div class="flex gap-1">
+            <input [(ngModel)]="item.label" [id]="item.id"/>
+            <button class="shadow px-1 text-red-500"
+                    (click)="deleteSubCategory('income', i, item.id)">
+              Delete
+            </button>
+          </div>
+
+        </td>
+        <td
+          *ngFor="let data of item.data"
+          class="p-2 border border-collapse">
+          <input [id]="data.id" [(ngModel)]="data.value" type="number"/>
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="p-2 border border-collapse hover:cursor-pointer bg-cyan-300"
+          [colSpan]="months.length + 1"
+          (click)="addSubCategory('income', i)"
+        >
+          Add new subcategory
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse font-semibold">Sub Total</td>
+        <td
+          *ngFor="let _ of months; let colIndex = index"
+          class="p-2 border border-collapse">
+          {{ calculateSubTotal(category.subCategories, months[colIndex]) | number }}
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse bg-gray-400" [colSpan]="months.length + 1"></td>
+      </tr>
+      </tbody>
+      <tbody>
+      <tr>
+        <td class="p-2 border border-collapse hover:cursor-pointer bg-cyan-300"
+            [colSpan]="months.length + 1"
+            (click)="addCategory('income')"
+        >
+          Add new category
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse bg-gray-500" [colSpan]="months.length + 1"></td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse font-bold">Income Total</td>
+        <td class="p-2 border border-collapse" *ngFor="let month of months">
+          {{ calculateCategoryTotal(income, month) | number }}
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse bg-gray-500" [colSpan]="months.length + 1"></td>
+      </tr>
+      </tbody>
+      <!--Expenses-->
+      <tbody>
+      <tr>
+        <td [colSpan]="months.length + 1" class="p-2 border border-collapse bg-gray-200 font-bold">
+          Expenses
+        </td>
+      </tr>
+      </tbody>
+      <tbody
+        *ngFor="let category of expenses; let i = index"
+      >
+      <tr>
+        <td class="p-2 border border-collapse" [colSpan]="months.length + 1">
+          <div class="flex gap-1">
+            <input [id]="category.id" [(ngModel)]="category.label"/>
+            <button class="shadow px-1 text-red-500"
+                    (click)="deleteCategory('income', category.id)">
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr
+        *ngFor="let item of category.subCategories"
+      >
+        <td class="p-2 border border-collapse">
+          <div class="flex gap-1">
+            <input [(ngModel)]="item.label" [id]="item.id"/>
+            <button class="shadow px-1 text-red-500"
+                    (click)="deleteSubCategory('income', i, item.id)">
+              Delete
+            </button>
+          </div>
+        </td>
+        <td
+          *ngFor="let data of item.data"
+          class="p-2 border border-collapse">
+          <input [id]="data.id" [(ngModel)]="data.value" type="number"/>
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="p-2 border border-collapse hover:cursor-pointer bg-cyan-300"
+          [colSpan]="months.length + 1"
+          (click)="addSubCategory('income', i)"
+        >
+          Add new subcategory
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse font-semibold">Sub Total</td>
+        <td
+          *ngFor="let _ of months; let colIndex = index"
+          class="p-2 border border-collapse">
+          {{ calculateSubTotal(category.subCategories, months[colIndex]) | number }}
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse bg-gray-400" [colSpan]="months.length + 1"></td>
+      </tr>
+      </tbody>
+      <tbody>
+      <tr>
+        <td class="p-2 border border-collapse hover:cursor-pointer bg-cyan-300"
+            [colSpan]="months.length + 1"
+            (click)="addCategory('expenses')"
+        >
+          Add new category
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse bg-gray-500" [colSpan]="months.length + 1"></td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse font-bold">Expenses Total</td>
+        <td class="p-2 border border-collapse" *ngFor="let month of months">
+          {{ calculateCategoryTotal(expenses, month) | number }}
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse bg-gray-500" [colSpan]="months.length + 1"></td>
+      </tr>
+      </tbody>
+      <!--Total-->
+      <tbody>
+      <tr>
+        <td class="p-2 border border-collapse font-bold">
+          Profit/Loss
+        </td>
+        <td class="p-2 border border-collapse" *ngFor="let month of months">
+          {{ calculateGrandTotal(month) | number }}
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse font-bold">
+          Opening Balance
+        </td>
+        <td class="p-2 border border-collapse" *ngFor="let _ of months; let i = index">
+          {{ calculateOpenBalance(i) | number }}
+        </td>
+      </tr>
+      <tr>
+        <td class="p-2 border border-collapse font-bold">
+          Closing Balance
+        </td>
+        <td class="p-2 border border-collapse" *ngFor="let _ of months; let i = index">
+          {{ calculateCloseBalance(i) | number }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
