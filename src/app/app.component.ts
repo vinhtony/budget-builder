@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {v4} from 'uuid';
-import {DatePipe, DecimalPipe, NgForOf} from "@angular/common";
-import {Category} from "./types";
+import {DatePipe, DecimalPipe, NgForOf, NgIf} from "@angular/common";
+import {Category, ContextValue} from "./types";
 import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [DatePipe, NgForOf, FormsModule, DecimalPipe],
+  imports: [DatePipe, NgForOf, FormsModule, DecimalPipe, NgIf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -97,6 +97,9 @@ export class AppComponent implements OnInit {
       ]
     }
   ]
+  contextMenuVisible = false;
+  contextMenuPosition = {x: 0, y: 0};
+  currentData: ContextValue | null = null;
 
   onChangeMonths(key: 'startDate' | 'endDate', e: Event) {
     this[key] = (e.target as HTMLInputElement).value;
@@ -251,20 +254,38 @@ export class AppComponent implements OnInit {
     }
   }
 
-  onApplyToAll(groupKey: 'income' | 'expenses', index: number, subIndex: number, value: number) {
-    if(confirm('Apply to all')){
-      this[groupKey] = this[groupKey].map((category: Category, i) => i === index ? ({
-        ...category,
-        subCategories: category.subCategories.map((subCategory, j) => subIndex === j ? ({
-          ...subCategory,
-          data: subCategory.data.map(data => ({
-            ...data,
-            value
-          }))
-        }) : subCategory)
-      }) : category)
+  openContext(event: MouseEvent, groupKey: 'income' | 'expenses', index: number, subIndex: number, value: number) {
+    event.preventDefault();
+    this.contextMenuVisible = true;
+    this.contextMenuPosition = {x: event.clientX, y: event.clientY};
+    this.currentData = {
+      groupKey,
+      index,
+      subIndex,
+      value
     }
 
+
+  }
+
+  applyToAll() {
+    if (!this.currentData) return;
+    const {groupKey, index, value, subIndex} = this.currentData;
+    this[groupKey] = this[groupKey].map((category: Category, i) => i === index ? ({
+      ...category,
+      subCategories: category.subCategories.map((subCategory, j) => subIndex === j ? ({
+        ...subCategory,
+        data: subCategory.data.map(data => ({
+          ...data,
+          value
+        }))
+      }) : subCategory)
+    }) : category)
+    this.contextMenuVisible = false
+  }
+
+  onCloseContextMenu() {
+    this.contextMenuVisible = false
   }
 
   ngOnInit(): void {

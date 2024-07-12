@@ -1,4 +1,4 @@
-<div class="flex flex-col p-4 gap-5">
+<div class="flex flex-col p-4 gap-5 relative">
   <h1 class="text-2xl">Budget Builder</h1>
 
   <div class="grid grid-cols-2 gap-4">
@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div class="overflow-auto h-[80vh] relative">
+  <div class="overflow-auto h-[80vh]">
     <table>
       <thead>
       <tr>
@@ -76,7 +76,7 @@
           *ngFor="let data of item.data"
           class="p-2 border border-collapse">
           <input [id]="data.id" [(ngModel)]="data.value" type="number"
-                 (contextmenu)="onApplyToAll('income', i, itemIndex, data.value)"/>
+                 (contextmenu)="openContext($event, 'income', i, itemIndex, data.value)"/>
         </td>
       </tr>
       <tr>
@@ -160,7 +160,7 @@
           *ngFor="let data of item.data"
           class="p-2 border border-collapse">
           <input [id]="data.id" [(ngModel)]="data.value" type="number"
-                 (contextmenu)="onApplyToAll('expenses', i, itemIndex, data.value)"/>
+                 (contextmenu)="openContext($event, 'expenses', i, itemIndex, data.value)"/>
         </td>
       </tr>
       <tr>
@@ -233,6 +233,22 @@
         </td>
       </tr>
       </tbody>
+
     </table>
   </div>
+  <ng-container *ngIf="contextMenuVisible">
+    <div (click)="onCloseContextMenu()" class="context-menu-container"
+    >
+      <div
+        class="context-menu"
+        [style.top.px]="contextMenuPosition.y"
+        [style.left.px]="contextMenuPosition.x">
+        <ul>
+          <li (click)="applyToAll()">Apply to all</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </ng-container>
 </div>

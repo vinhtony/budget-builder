@@ -10,3 +10,10 @@ export interface Data {
   value: number;
   monthId: string;
 }
+
+export interface ContextValue {
+  groupKey: 'income' | 'expenses',
+  index: number,
+  subIndex: number,
+  value: number
+}
