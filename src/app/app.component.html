@@ -4,12 +4,12 @@
   <div class="grid grid-cols-2 gap-4">
     <div class="flex flex-col">
       <label for="startTime">Start Time</label>
-      <input type="month" id="startTime" class="border p-2 rounded" [value]="startDate"
+      <input type="month" id="startTime" class="border p-2" [value]="startDate"
              (change)="onChangeMonths('startDate', $event)"/>
     </div>
     <div class="flex flex-col">
       <label for="endTime">End Time</label>
-      <input type="month" id="endTime" class="border" [value]="endDate"
+      <input type="month" id="endTime" class="border p-2" [value]="endDate"
              (change)="onChangeMonths('endDate', $event)"/>
     </div>
   </div>
@@ -60,7 +60,7 @@
         </td>
       </tr>
       <tr
-        *ngFor="let item of category.subCategories"
+        *ngFor="let item of category.subCategories; let itemIndex = index"
       >
         <td class="p-2 border border-collapse">
           <div class="flex gap-1">
@@ -75,7 +75,8 @@
         <td
           *ngFor="let data of item.data"
           class="p-2 border border-collapse">
-          <input [id]="data.id" [(ngModel)]="data.value" type="number"/>
+          <input [id]="data.id" [(ngModel)]="data.value" type="number"
+                 (contextmenu)="onApplyToAll('income', i, itemIndex, data.value)"/>
         </td>
       </tr>
       <tr>
@@ -137,20 +138,20 @@
           <div class="flex gap-1">
             <input [id]="category.id" [(ngModel)]="category.label"/>
             <button class="shadow px-1 text-red-500"
-                    (click)="deleteCategory('income', category.id)">
+                    (click)="deleteCategory('expenses', category.id)">
               Delete
             </button>
           </div>
         </td>
       </tr>
       <tr
-        *ngFor="let item of category.subCategories"
+        *ngFor="let item of category.subCategories; let itemIndex = index"
       >
         <td class="p-2 border border-collapse">
           <div class="flex gap-1">
             <input [(ngModel)]="item.label" [id]="item.id"/>
             <button class="shadow px-1 text-red-500"
-                    (click)="deleteSubCategory('income', i, item.id)">
+                    (click)="deleteSubCategory('expenses', i, item.id)">
               Delete
             </button>
           </div>
@@ -158,14 +159,15 @@
         <td
           *ngFor="let data of item.data"
           class="p-2 border border-collapse">
-          <input [id]="data.id" [(ngModel)]="data.value" type="number"/>
+          <input [id]="data.id" [(ngModel)]="data.value" type="number"
+                 (contextmenu)="onApplyToAll('expenses', i, itemIndex, data.value)"/>
         </td>
       </tr>
       <tr>
         <td
           class="p-2 border border-collapse hover:cursor-pointer bg-cyan-300"
           [colSpan]="months.length + 1"
-          (click)="addSubCategory('income', i)"
+          (click)="addSubCategory('expenses', i)"
         >
           Add new subcategory
         </td>

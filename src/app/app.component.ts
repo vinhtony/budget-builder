@@ -251,6 +251,22 @@ export class AppComponent implements OnInit {
     }
   }
 
+  onApplyToAll(groupKey: 'income' | 'expenses', index: number, subIndex: number, value: number) {
+    if(confirm('Apply to all')){
+      this[groupKey] = this[groupKey].map((category: Category, i) => i === index ? ({
+        ...category,
+        subCategories: category.subCategories.map((subCategory, j) => subIndex === j ? ({
+          ...subCategory,
+          data: subCategory.data.map(data => ({
+            ...data,
+            value
+          }))
+        }) : subCategory)
+      }) : category)
+    }
+
+  }
+
   ngOnInit(): void {
     this.handleRenderMonth()
   }
